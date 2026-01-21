@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from '../db';
 import { subjects, departments } from '../db/schema/app';
-import { and, desc, eq, getTableColumns, like, or, sql } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, ilike, like, or, sql } from 'drizzle-orm';
 
 const router = Router();
 
@@ -28,6 +28,10 @@ router.get("/", async (req, res) => {
     if (department) {
       filterConditions.push(
         like(departments.name, `%${department}%`),
+      );
+      const deptPattern = `%${String(department).replace(/[&_]/g, '\\$&')}%`
+      filterConditions.push(
+        ilike(departments.name, deptPattern),
       );
     }
 
